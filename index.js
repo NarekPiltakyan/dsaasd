@@ -2,14 +2,14 @@ const { Telegraf } = require('telegraf')
 require("dotenv").config()
 const bot = new Telegraf(process.env.BOT_TOKEN)
 
-
 function showMenu(ctx) {
     return ctx.telegram.sendMessage(ctx.chat.id, "🔽 Выберите действие:", {
         reply_markup: {
             keyboard: [
                 ["Узнать свое имя (Ты конченный?)"],
                 ["Узнать Фамилию"],
-                ["Взломать Пентагон"]
+                ["Взломать Пентагон"],
+                ["Информация про продукт"]
             ],
             resize_keyboard: true 
         }
@@ -32,7 +32,7 @@ bot.hears("Узнать свое имя (Ты конченный?)", (ctx) => {
 bot.hears("Узнать Фамилию", (ctx) => {
     if (ctx.chat.last_name) {
         ctx.reply(`👍 Вот Фамилия ${ctx.chat.last_name}`);
-    } else ctx.reply(`😒 Стой твоя фамилия не указана`);
+    } else ctx.reply(`😒 Стой твоя фамилия не указана`); 
 });
 
 bot.hears("Взломать Пентагон", async (ctx) => {
@@ -49,7 +49,15 @@ bot.hears("Взломать Пентагон", async (ctx) => {
         }
     }, 1000) 
 });
-
+bot.hears("Информация про продукт", async ctx => {
+    let result;
+    await fetch('https://fakestoreapi.com/products/1')
+            .then(res=>res.json())
+            .then(json=>result = json)
+    ctx.reply(`Название: ${result.title}\nЦена: ${result.price}$`)
+    ctx.replyWithPhoto({ url: result.image });
+    
+})
 
 bot.on("text", (ctx) => {
     ctx.reply("Я не понял 🤔");
